@@ -2,10 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char *argv[]) {
-    FILE *fp;
+char *fname;
 
-    char *fname = argv[1];
+void rerror(FILE *fp) {
+    if (fp == NULL) {
+        fprintf(stderr, "cat: %s: No such file or directory\n", fname);
+        exit(1);
+    }
+}
+
+int main(int argc, char **argv) {
+    FILE *fp;
+    fname = argv[1];
     int chr;
     int buf = 256;
     char str[buf];
@@ -20,14 +28,12 @@ int main(int argc, char *argv[]) {
     for (; *argv != NULL; argv++) {
         fname = *argv;
         fp = fopen(fname, "r");
-        if (fp == NULL) {
-            printf("cat: %s: No such file or directory\n", fname);
-            return -1;
-        }
+        rerror(fp);
+
         while ((fgets(str, buf, fp)) != NULL) {
             printf("%s", str);
         }
-        printf("\n");
         fclose(fp);
     }
 }
+
