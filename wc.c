@@ -5,10 +5,9 @@
 #include <string.h>
 
 char *fname;
-int nlines = 0;
-int nwords = 0;
-int rd_size = 0;
-
+int sumlines = 0;
+int sumwords = 0;
+int sumbytes = 0;
 bool rerror(FILE *fp) {
     if (fp == NULL) {
         fprintf(stderr, "wc: %s: No such file or directory\n", fname);
@@ -25,24 +24,30 @@ bool ischar(char c) {
 }
 
 void wc(FILE *fp, char *fname) {
+    int nl = 0;
+    int nw = 0;
+    int nb = 0;
     char buf[2048];
     size_t ret;
     bool inword = false;
     while (ret = fread(buf, 1, sizeof(buf), fp)) {
-        rd_size += ret;
+        nb += ret;
         for (int i = 0; i < ret; i++) {
             if (inword && !ischar(buf[i])) {
                 inword = false;
             } else if (!inword && ischar(buf[i])) {
-                nwords++;
+                nw++;
                 inword = true;
             }
             if (buf[i] == '\n') {
-                nlines++;
+                nl++;
             }
         }
     }
-    printf("% 4d % 4d %d %s\n", nlines, nwords, rd_size, fname);
+    sumlines += nl;
+    sumwords += nw;
+    sumbytes += nb;
+    printf("% 4d % 4d %d %s\n", nl, nw, nb, fname);
 }
 
 int main(int argc, char **argv) {
@@ -54,5 +59,8 @@ int main(int argc, char **argv) {
             continue;
         }
         wc(fp, fname);
+    }
+    if (argc > 1) {
+        printf("% 4d % 4d %d total\n", sumlines, sumwords, sumbytes);
     }
 }
