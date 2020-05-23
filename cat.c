@@ -7,14 +7,13 @@ char *fname;
 void rerror(FILE *fp) {
     if (fp == NULL) {
         fprintf(stderr, "cat: %s: No such file or directory\n", fname);
+        fclose(fp);
         exit(1);
     }
 }
 
 int main(int argc, char **argv) {
     FILE *fp;
-    fname = argv[1];
-    int chr;
     int buf = 256;
     char str[buf];
     argv++;
@@ -36,4 +35,3 @@ int main(int argc, char **argv) {
         fclose(fp);
     }
 }
-
